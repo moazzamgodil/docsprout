@@ -15,10 +15,11 @@ export async function generateMetadata() {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const config = await readConfig();
   const project = config.projectName || "docsprout";
+  const theme = config.theme || "default";
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen" suppressHydrationWarning>
+      <body className="min-h-screen" suppressHydrationWarning data-docsprout-theme={theme}>
         <Providers>
           <div className="min-h-screen">
             <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/70 bg-white/75 backdrop-blur dark:border-slate-800/70 dark:bg-slate-950/80">

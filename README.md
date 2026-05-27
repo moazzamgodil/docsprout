@@ -2,10 +2,10 @@
 
 `docsprout` is a plug-and-play documentation platform for existing projects.
 
-Install it, run `init`, and get:
-- a documentation site (`/docs`)
-- an admin CMS (`/docs-admin`)
-- auto-generated navigation from your Markdown files
+Install it, run one command, and get:
+- public docs site (`/docs`)
+- admin CMS (`/docs-admin`)
+- automatic Markdown discovery and sidebar generation
 
 ## Installation
 
@@ -13,7 +13,7 @@ Install it, run `init`, and get:
 npm install -D docsprout
 ```
 
-## Quick Start (Existing Project)
+## Quick Start
 
 From your project root:
 
@@ -22,58 +22,54 @@ npx docsprout init
 npx docsprout dev
 ```
 
-`init` creates:
-1. `docsprout/` content + generated data folders
-2. `apps/web` docs runtime app
+Then open:
+- `http://localhost:3000/docs`
+- `http://localhost:3000/docs-admin`
 
-On first `dev`, dependencies for `docsprout/web` are installed automatically.
-
-## Commands
+## CLI Commands
 
 ### `npx docsprout init`
-Initial setup.
+Initialize docsprout in your project.
 
-Creates:
-- `docsprout/config.json`
-- `docsprout/sidebar.json`
-- `docsprout/content/`
-- `docsprout/generated/`
-- `docsprout/themes/`
-- `docsprout/uploads/`
-- `docsprout/cache/`
-- `docsprout/web` (Next.js docs + admin app)
+Creates a `docsprout/` folder with config, generated data, and web runtime.
+
+### `npx docsprout upgrade`
+Upgrade your generated docs runtime (`docsprout/web`) to the latest scaffold template.
 
 ### `npx docsprout scan`
-Rescans Markdown files and regenerates sidebar/search data.
+Rescan Markdown files and regenerate pages/sidebar/search data.
 
 ### `npx docsprout dev`
-Starts development mode:
-- watches Markdown changes
-- regenerates generated data on change
-- runs docs/admin with hot reload
+Run docs + admin in development mode with Markdown file watching.
 
 ### `npx docsprout build`
-Creates production build.
+Create a production build.
 
 ### `npx docsprout publish`
-Builds published-only output:
-- draft pages excluded
-- search index excludes drafts
+Create a published-only production build (drafts excluded).
 
-## Using in Existing Projects
+## How Markdown Is Discovered
 
-### 1) Add your docs files
-Place docs anywhere in your repo:
-- root `README.md`
-- `docs/**/*.md`
-- `packages/*/**/*.md` (monorepos)
-- `apps/*/**/*.md`
+By default, docsprout scans configured content roots for:
+- `README.md`
+- `*.md`
+- `*.mdx`
 
-### 2) Configure discovery
+Default ignore patterns include:
+- `node_modules`
+- `dist`
+- `build`
+- `coverage`
+- `.next`
+- hidden folders
+
+## Configuration
+
 Edit `docsprout/config.json`:
 
 ```json
 {
+  "projectName": "My Project",
   "contentRoots": [".", "packages/*", "apps/*"],
   "ignore": [
     "**/node_modules/**",
@@ -83,13 +79,17 @@ Edit `docsprout/config.json`:
     "**/.next/**",
     "**/.*/**"
   ],
+  "theme": "default",
   "basePath": "/docs",
-  "adminPath": "/docs-admin"
+  "adminPath": "/docs-admin",
+  "outputDir": "docsprout",
+  "includeDraftsInDev": true
 }
 ```
 
-### 3) Mark drafts and published pages
-Use frontmatter:
+## Draft/Publish Workflow
+
+Use frontmatter in Markdown files:
 
 ```md
 ---
@@ -100,25 +100,38 @@ tags: [api, backend]
 ---
 ```
 
-- `status: published` => visible in production
-- `status: draft` => CMS/dev preview only
+Rules:
+- `status: draft` => visible in admin/dev workflows
+- `status: published` => included in public docs and production outputs
 
-### 4) Run in your workflow
+## Admin CMS Features
 
-```bash
-npx docsprout scan
-npx docsprout dev
-npx docsprout build
+`/docs-admin` includes:
+- page listing and search
+- create/edit pages
+- markdown editor with toolbar
+- preview mode
+- diagram-friendly markdown authoring
+- project config editing
+
+## Diagram Support
+
+Docs and preview support Mermaid and common diagram syntaxes using fenced code blocks, for example:
+
+<pre>
+```mermaid
+flowchart LR
+  A[Start] --> B[Done]
 ```
+</pre>
 
-## NPM Scripts (Recommended)
-
-Add to your project `package.json`:
+## Suggested NPM Scripts
 
 ```json
 {
   "scripts": {
     "docs:init": "docsprout init",
+    "docs:upgrade": "docsprout upgrade",
     "docs:scan": "docsprout scan",
     "docs:dev": "docsprout dev",
     "docs:build": "docsprout build",
@@ -129,39 +142,33 @@ Add to your project `package.json`:
 
 ## Monorepo Support
 
-`docsprout` works with:
+Works well with:
 - npm workspaces
 - Turborepo
 - Nx
 
-Recommended:
-- run commands from monorepo root
-- set `contentRoots` to match workspace layout
-
-## Production Notes
-
-- Only `published` pages are included in production output.
-- Run `docsprout publish` in CI for production docs builds.
-- Keep `docsprout/config.json` in version control.
+Recommended: run commands from monorepo root.
 
 ## Troubleshooting
 
-### `Web app not found. Run \`docsprout init\` first.`
-Run `npx docsprout init` from project root. This command scaffolds `docsprout/web`.
+### Docs not updating
+Run:
 
-### Docs page is empty
-- Run `npx docsprout scan`
-- Check `contentRoots` paths
-- Ensure files end in `.md` or `.mdx`
+```bash
+npx docsprout scan
+```
 
-### Page missing in production
-- Confirm frontmatter has `status: published`
+### Page missing from production
+Check frontmatter status:
+- must be `published`
 
-### Sidebar order looks wrong
-- Add frontmatter `order` values
+### Runtime scaffold upgrade
+Run:
+
+```bash
+npx docsprout upgrade
+```
 
 ## License
 
 MIT
-
-
