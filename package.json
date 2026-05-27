@@ -1,0 +1,19 @@
+{
+  "name": "docsprout-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Monorepo for docsprout",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -ws --if-present",
+    "dev:web": "npm run dev -w @docsprout/web",
+    "build:web": "npm run build -w @docsprout/web",
+    "lint": "npm run lint -ws --if-present",
+    "typecheck": "npm run typecheck -ws --if-present"
+  }
+}
+
+

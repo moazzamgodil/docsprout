@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f8fafc;
+  --fg: #0f172a;
+}
+
+.dark {
+  --bg: #020617;
+  --fg: #e2e8f0;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 500px at 0% -10%, rgba(34, 197, 94, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 100% -10%, rgba(14, 165, 233, 0.14), transparent 60%),
+    var(--bg);
+  color: var(--fg);
+}
+
+.markdown-content {
+  @apply text-slate-700 dark:text-slate-300;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  scroll-margin-top: 92px;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  @apply mt-8 mb-3 font-semibold tracking-tight text-slate-950 dark:text-slate-100;
+}
+
+.markdown-content h1 { @apply text-3xl; }
+.markdown-content h2 { @apply text-2xl; }
+.markdown-content h3 { @apply text-xl; }
+
+.markdown-content p {
+  @apply my-4 leading-7;
+}
+
+.markdown-content a {
+  @apply text-emerald-600 underline underline-offset-4 hover:text-emerald-500;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  @apply my-4 pl-6;
+}
+
+.markdown-content li {
+  @apply my-1;
+}
+
+.markdown-content blockquote {
+  @apply my-5 border-l-4 border-slate-300 pl-4 italic text-slate-600 dark:border-slate-700 dark:text-slate-400;
+}
+
+.markdown-content pre {
+  @apply my-5 overflow-x-auto rounded-xl border border-slate-200 bg-slate-950 p-4 text-slate-100 dark:border-slate-700;
+}
+
+.markdown-content :not(pre) > code {
+  @apply rounded bg-slate-200 px-1.5 py-0.5 text-sm text-slate-800 dark:bg-slate-800 dark:text-slate-100;
+}
+
+.table-wrap {
+  @apply my-5 w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700;
+}
+
+.markdown-content table {
+  @apply min-w-full border-collapse text-sm;
+}
+
+.markdown-content th,
+.markdown-content td {
+  @apply whitespace-nowrap border-b border-slate-200 px-3 py-2 text-left dark:border-slate-700;
+}
+

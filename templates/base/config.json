@@ -1,0 +1,18 @@
+{
+  "projectName": "My Docsprout Site",
+  "contentRoots": [".", "packages/*", "apps/*"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/.next/**",
+    "**/.*/**"
+  ],
+  "theme": "default",
+  "basePath": "/docs",
+  "adminPath": "/docs-admin",
+  "outputDir": "docsprout",
+  "includeDraftsInDev": true
+}
+
