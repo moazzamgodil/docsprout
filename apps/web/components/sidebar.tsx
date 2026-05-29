@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { SidebarItem } from "../lib/types";
+import type { SidebarItem } from "@docsprout/shared";
 
 export const Sidebar = ({ items }: { items: SidebarItem[] }) => {
   const pathname = usePathname();

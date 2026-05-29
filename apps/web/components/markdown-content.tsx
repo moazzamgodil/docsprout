@@ -81,10 +81,11 @@ export const MarkdownContent = ({ content }: { content: string }) => {
             <table {...props} />
           </div>
         ),
-        code({ className, children, inline }) {
+        code({ className, children }) {
           const raw = String(children).replace(/\n$/, "");
           const lang = className?.replace("language-", "") ?? "";
-          const diagram = !inline ? normalizeDiagramCode(lang, raw) : null;
+          const isCodeBlock = Boolean(className);
+          const diagram = isCodeBlock ? normalizeDiagramCode(lang, raw) : null;
 
           if (diagram) {
             return <MermaidBlock code={diagram} />;
