@@ -5,7 +5,6 @@ import chalk from "chalk";
 import chokidar from "chokidar";
 import path from "node:path";
 import fs from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import { execa } from "execa";
 import { initProject, loadConfig, runScan } from "@docsprout/core";
 
@@ -30,8 +29,13 @@ const copyDir = async (src: string, dest: string) => {
   }
 };
 
+const getCliDir = () => {
+  // CLI entry path is always available for node-invoked commands.
+  return path.dirname(path.resolve(process.argv[1]));
+};
+
 const templateWebPath = () => {
-  const here = path.dirname(fileURLToPath(import.meta.url));
+  const here = getCliDir();
   return path.resolve(here, "../templates/web");
 };
 
