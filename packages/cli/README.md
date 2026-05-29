@@ -156,6 +156,24 @@ Rules:
 - `status: draft` appears in admin/dev workflows
 - `status: published` is included in production/publish output
 
+## Admin Panel Guide
+
+The admin panel is available at `/docs-admin` when running `docsprout dev`.
+
+Typical workflow:
+1. Open `/docs-admin`
+2. Create a new page or open an existing one
+3. Edit content in the Markdown editor and preview
+4. Save changes
+5. Set frontmatter `status` to `published` for pages that should appear in production
+6. Run `docsprout publish` for production-ready output
+
+What the admin panel is for:
+- create/edit Markdown pages
+- update page metadata (title/order/status/tags)
+- preview rendered content before publishing
+- update project config values used by the docs runtime
+
 ## Diagram Support
 
 Docs and preview support Mermaid and common diagram syntaxes via fenced code blocks.

@@ -13,7 +13,27 @@ const cwd = process.cwd();
 const webDirPrimary = path.join(cwd, "docsprout", "web");
 const webDirLegacy = path.join(cwd, "apps", "web");
 
-const log = (message: string) => console.log(chalk.cyan(`[docsprout] ${message}`));
+type Colorizer = {
+  red: (text: string) => string;
+  cyan: (text: string) => string;
+  bold: (text: string) => string;
+};
+
+const color = (() => {
+  const maybe = chalk as unknown as { default?: Colorizer } & Partial<Colorizer>;
+  return (maybe.default ?? maybe) as Colorizer;
+})();
+
+type PromptApi = {
+  prompt: <T = unknown>(questions: unknown) => Promise<T>;
+};
+
+const promptApi = (() => {
+  const maybe = inquirer as unknown as { default?: PromptApi } & Partial<PromptApi>;
+  return (maybe.default ?? maybe) as PromptApi;
+})();
+
+const log = (message: string) => console.log(color.cyan(`[docsprout] ${message}`));
 
 const copyDir = async (src: string, dest: string) => {
   await fs.mkdir(dest, { recursive: true });
@@ -59,7 +79,7 @@ const resolveWebDir = async (): Promise<string | null> => {
 const ensureWebApp = async () => {
   const dir = await resolveWebDir();
   if (!dir) {
-    console.error(chalk.red("Web app not found. Run `docsprout init` first."));
+    console.error(color.red("Web app not found. Run `docsprout init` first."));
     return null;
   }
   return dir;
@@ -99,7 +119,7 @@ const scaffoldWebApp = async () => {
 
   const src = templateWebPath();
   await copyDir(src, webDirPrimary);
-  log(`Scaffolded web app at ${chalk.bold(webDirPrimary)}`);
+  log(`Scaffolded web app at ${color.bold(webDirPrimary)}`);
 };
 
 const upgradeWebApp = async () => {
@@ -113,7 +133,7 @@ const upgradeWebApp = async () => {
 
   const exists = await fs.access(path.join(target, "package.json")).then(() => true).catch(() => false);
   if (exists) {
-    const answer = await inquirer.prompt([
+    const answer = await promptApi.prompt<{ confirm: boolean }>([
       {
         type: "confirm",
         name: "confirm",
@@ -131,30 +151,53 @@ const upgradeWebApp = async () => {
   }
 
   await copyDir(template, target);
-  log(`Upgraded web scaffold at ${chalk.bold(target)}`);
+  log(`Upgraded web scaffold at ${color.bold(target)}`);
   log("Run `docsprout dev` to install deps, sync database, and start.");
 };
 
-program
-  .name("docsprout")
-  .description("Plug-and-play documentation platform")
-  .version("0.1.0");
+const resolveCliVersion = async () => {
+  const pkgPath = path.resolve(getCliDir(), "../package.json");
+  try {
+    const raw = await fs.readFile(pkgPath, "utf-8");
+    const pkg = JSON.parse(raw) as { version?: string };
+    return pkg.version ?? "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+};
+
+program.name("docsprout").description("Plug-and-play documentation platform");
 
 program
   .command("init")
   .description("Initialize docsprout in current project")
+  .option("--project-name <name>", "Project name to use in generated config")
   .action(async () => {
-    const answers = await inquirer.prompt([
-      { type: "input", name: "projectName", message: "Project name", default: "My Docsprout Site" }
-    ]);
+    const cmd = program.commands.find((c) => c.name() === "init");
+    const optionName = cmd?.opts<{ projectName?: string }>()?.projectName;
+    const defaultProjectName = "My Docsprout Site";
+    const projectName =
+      optionName ||
+      (!process.stdin.isTTY
+        ? defaultProjectName
+        : (
+            await promptApi.prompt<{ projectName: string }>([
+              {
+                type: "input",
+                name: "projectName",
+                message: "Project name",
+                default: defaultProjectName
+              }
+            ])
+          ).projectName);
 
     const { cfg, scan } = await initProject(cwd);
-    cfg.projectName = answers.projectName;
+    cfg.projectName = projectName;
     await fs.writeFile(path.join(cwd, "docsprout", "config.json"), JSON.stringify(cfg, null, 2));
 
     await scaffoldWebApp();
 
-    log(`Initialized at ${chalk.bold(path.join(cwd, "docsprout"))}`);
+    log(`Initialized at ${color.bold(path.join(cwd, "docsprout"))}`);
     log(`Discovered ${scan.pages.length} markdown pages.`);
     log("Run `docsprout dev` to start docs + admin.");
   });
@@ -238,7 +281,12 @@ program
     log("Publish build ready.");
   });
 
-program.parseAsync(process.argv).catch((error) => {
-  console.error(chalk.red(error instanceof Error ? error.message : String(error)));
-  process.exit(1);
-});
+resolveCliVersion()
+  .then((version) => {
+    program.version(version);
+    return program.parseAsync(process.argv);
+  })
+  .catch((error) => {
+    console.error(color.red(error instanceof Error ? error.message : String(error)));
+    process.exit(1);
+  });

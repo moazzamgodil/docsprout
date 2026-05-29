@@ -53,6 +53,7 @@ jobs:
 
       - name: Publish to NPM
         if: ${{ contains(steps.get-latest-tag.outputs.tag, steps.version.outputs.value) == false }}
-        run: npm publish -w packages/cli --access public
+        working-directory: packages/cli
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
