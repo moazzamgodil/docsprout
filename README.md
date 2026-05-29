@@ -1,17 +1,46 @@
-# docsprout
+# Docsprout
 
-`docsprout` is a plug-and-play documentation platform for existing projects.
+[![npm package][npm-img]][npm-url]
+[![Downloads][downloads-img]][downloads-url]
+[![Issues][issues-img]][issues-url]
+![ES Version][es-version]
+![Node Version][node-version]
 
-Install it, run one command, and get:
-- public docs site (`/docs`)
-- admin CMS (`/docs-admin`)
-- automatic Markdown discovery and sidebar generation
+[npm-img]: https://img.shields.io/npm/v/docsprout/latest
+[npm-url]: https://www.npmjs.com/package/docsprout
+[downloads-img]: https://img.shields.io/npm/dt/docsprout
+[downloads-url]: https://www.npmtrends.com/docsprout
+[issues-img]: https://img.shields.io/github/issues/moazzamgodil/docsprout
+[issues-url]: https://github.com/moazzamgodil/docsprout/issues
+[es-version]: https://img.shields.io/badge/ES-2020-yellow
+[node-version]: https://img.shields.io/badge/node-20.x-green
 
-## Installation
+Docsprout is a CLI that adds a documentation site and admin editor to an existing project using Markdown files.
+
+After setup, your docs are available at:
+- `/docs` (public docs)
+- `/docs-admin` (admin editor)
+
+## Who This Is For
+
+Use Docsprout if you want to:
+- keep docs in Markdown inside your repo
+- generate navigation/search automatically
+- maintain draft vs published content
+
+## Requirements
+
+- Node.js 18+
+- npm 9+
+- An existing JavaScript/TypeScript project
+
+## Install
 
 ```bash
 npm install -D docsprout
 ```
+
+You can also run commands directly with `npx` without adding scripts.
 
 ## Quick Start
 
@@ -26,31 +55,48 @@ Then open:
 - `http://localhost:3000/docs`
 - `http://localhost:3000/docs-admin`
 
+## Recommended npm Scripts
+
+```json
+{
+  "scripts": {
+    "docs:init": "docsprout init",
+    "docs:upgrade": "docsprout upgrade",
+    "docs:scan": "docsprout scan",
+    "docs:dev": "docsprout dev",
+    "docs:build": "docsprout build",
+    "docs:publish": "docsprout publish"
+  }
+}
+```
+
 ## CLI Commands
 
-### `npx docsprout init`
-Initialize docsprout in your project.
+### `docsprout init`
+Initializes Docsprout in your repository.
 
-Creates a `docsprout/` folder with config, generated data, and web runtime.
+Creates/updates the `docsprout/` workspace used by the docs runtime.
 
-### `npx docsprout upgrade`
-Upgrade your generated docs runtime (`docsprout/web`) to the latest scaffold template.
+### `docsprout upgrade`
+Upgrades generated docs runtime files to the latest scaffold template.
 
-### `npx docsprout scan`
-Rescan Markdown files and regenerate pages/sidebar/search data.
+### `docsprout scan`
+Rescans Markdown sources and regenerates docs data (pages, sidebar, search).
 
-### `npx docsprout dev`
-Run docs + admin in development mode with Markdown file watching.
+### `docsprout dev`
+Runs docs + admin in development mode with file watching.
 
-### `npx docsprout build`
-Create a production build.
+### `docsprout build`
+Builds production assets.
 
-### `npx docsprout publish`
-Create a published-only production build (drafts excluded).
+### `docsprout publish`
+Builds a production-ready output that excludes draft content.
 
-## How Markdown Is Discovered
+Note: `docsprout publish` is a content build command, not `npm publish`.
 
-By default, docsprout scans configured content roots for:
+## Markdown Discovery
+
+By default, Docsprout scans configured content roots for:
 - `README.md`
 - `*.md`
 - `*.mdx`
@@ -87,9 +133,15 @@ Edit `docsprout/config.json`:
 }
 ```
 
-## Draft/Publish Workflow
+Field notes:
+- `contentRoots`: where Markdown is discovered
+- `basePath`: URL path for public docs
+- `adminPath`: URL path for admin editor
+- `includeDraftsInDev`: include draft pages during local development
 
-Use frontmatter in Markdown files:
+## Draft vs Published Content
+
+Use frontmatter:
 
 ```md
 ---
@@ -101,22 +153,14 @@ tags: [api, backend]
 ```
 
 Rules:
-- `status: draft` => visible in admin/dev workflows
-- `status: published` => included in public docs and production outputs
-
-## Admin CMS Features
-
-`/docs-admin` includes:
-- page listing and search
-- create/edit pages
-- markdown editor with toolbar
-- preview mode
-- diagram-friendly markdown authoring
-- project config editing
+- `status: draft` appears in admin/dev workflows
+- `status: published` is included in production/publish output
 
 ## Diagram Support
 
-Docs and preview support Mermaid and common diagram syntaxes using fenced code blocks, for example:
+Docs and preview support Mermaid and common diagram syntaxes via fenced code blocks.
+
+Example:
 
 <pre>
 ```mermaid
@@ -125,44 +169,32 @@ flowchart LR
 ```
 </pre>
 
-## Suggested NPM Scripts
-
-```json
-{
-  "scripts": {
-    "docs:init": "docsprout init",
-    "docs:upgrade": "docsprout upgrade",
-    "docs:scan": "docsprout scan",
-    "docs:dev": "docsprout dev",
-    "docs:build": "docsprout build",
-    "docs:publish": "docsprout publish"
-  }
-}
-```
-
 ## Monorepo Support
 
-Works well with:
+Docsprout works with:
 - npm workspaces
 - Turborepo
 - Nx
 
-Recommended: run commands from monorepo root.
+Run commands from your repository root.
 
 ## Troubleshooting
 
-### Docs not updating
+### Docs changes not appearing
+
 Run:
 
 ```bash
 npx docsprout scan
 ```
 
-### Page missing from production
-Check frontmatter status:
-- must be `published`
+### Page missing in production output
 
-### Runtime scaffold upgrade
+Confirm frontmatter:
+- `status` must be `published`
+
+### Runtime scaffold is outdated
+
 Run:
 
 ```bash
