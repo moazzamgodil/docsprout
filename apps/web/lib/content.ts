@@ -1,5 +1,6 @@
-﻿import fs from "node:fs/promises";
+import fs from "node:fs/promises";
 import path from "node:path";
+import { defaultConfig } from "@docsprout/shared";
 import type { DocPage, DocsproutConfig, SidebarItem } from "@docsprout/shared";
 
 const resolveDocsRoot = async () => {
@@ -24,11 +25,24 @@ const readJson = async <T>(parts: string[]): Promise<T> => {
   return JSON.parse(raw) as T;
 };
 
-export const readConfig = async (): Promise<DocsproutConfig> => readJson(["docsprout", "config.json"]);
+const readJsonOrDefault = async <T>(parts: string[], fallback: T): Promise<T> => {
+  try {
+    return await readJson<T>(parts);
+  } catch (error) {
+    const known = error as NodeJS.ErrnoException;
+    if (known.code === "ENOENT") return fallback;
+    throw error;
+  }
+};
 
-export const readPages = async (): Promise<DocPage[]> => readJson(["docsprout", "generated", "pages.json"]);
+export const readConfig = async (): Promise<DocsproutConfig> =>
+  readJsonOrDefault(["docsprout", "config.json"], defaultConfig);
 
-export const readSidebar = async (): Promise<SidebarItem[]> => readJson(["docsprout", "sidebar.json"]);
+export const readPages = async (): Promise<DocPage[]> =>
+  readJsonOrDefault(["docsprout", "generated", "pages.json"], []);
+
+export const readSidebar = async (): Promise<SidebarItem[]> =>
+  readJsonOrDefault(["docsprout", "sidebar.json"], []);
 
 export const getPublishedPages = async () => {
   const pages = await readPages();
