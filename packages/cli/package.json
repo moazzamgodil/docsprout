@@ -1,6 +1,6 @@
 {
   "name": "docsprout",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Plug-and-play documentation platform CLI",
   "type": "module",
   "bin": {
@@ -13,9 +13,9 @@
     "templates"
   ],
   "scripts": {
-    "prebuild": "node ./scripts/sync-readme.mjs",
+    "prebuild": "node ./scripts/sync-version.mjs && node ./scripts/sync-readme.mjs",
     "build": "tsup",
-    "prepack": "node ./scripts/sync-readme.mjs",
+    "prepack": "node ./scripts/sync-version.mjs && node ./scripts/sync-readme.mjs",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
