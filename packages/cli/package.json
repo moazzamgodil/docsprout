@@ -13,21 +13,22 @@
     "templates"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "prebuild": "node ./scripts/sync-readme.mjs",
+    "build": "tsup",
+    "prepack": "node ./scripts/sync-readme.mjs",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@docsprout/core": "0.1.0",
-    "@docsprout/shared": "0.1.0",
     "chalk": "^5.3.0",
     "chokidar": "^4.0.3",
     "commander": "^12.1.0",
     "execa": "^9.3.0",
-    "inquirer": "^14.0.0",
-    "next": "^16.2.6"
+    "inquirer": "^14.0.0"
   },
   "devDependencies": {
+    "@docsprout/core": "0.1.0",
+    "@docsprout/shared": "0.1.0",
     "tsup": "^8.2.4",
     "tsx": "^4.16.5",
     "typescript": "^5.5.4"
